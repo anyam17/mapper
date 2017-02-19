@@ -30,6 +30,13 @@ class HomeController extends Controller
         return view('home');
     }
 
+    public function retJsonData(Request $request) 
+    {
+        $data = Car::all();
+
+        return response()->json($data);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Function that stores and displays the cars 
@@ -39,8 +46,8 @@ class HomeController extends Controller
         /* Validating the input form parameters*/
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
-            'latitude' => 'required',
-            'longitude' => 'required',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
             /*'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',*/
         ]);
 
@@ -60,9 +67,6 @@ class HomeController extends Controller
 
         /* Creating and storing a new Car object*/
         $cars = new Car;
-        if ($request->input('name') == null) {
-            dd('no input value');
-        }
         $cars->name = $request->input('name');
         $cars->latitude = $request->input('latitude');
         $cars->longitude = $request->input('longitude');

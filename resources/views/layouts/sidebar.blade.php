@@ -42,25 +42,70 @@
 
 @section('custom-js')
 <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAMWKCEVgLIsM6NCUKrRL2SGKlxvZsE6zc&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAMWKCEVgLIsM6NCUKrRL2SGKlxvZsE6zc">
 </script>
 
 <script type="text/javascript">
     var _token = $('meta[name="_token"]').attr('content');
 
     $(document).ready(function() {
+
+        /*******************************************************************************************************
+            Function that displays already created cars on page load
+         *******************************************************************************************************/
+        $.ajax({ 
+            method: 'GET',
+            url:'json_data',
+            cache: false,
+
+            success:function(data){
+                var infoWindow = new google.maps.InfoWindow();
+                var coordinates = new google.maps.LatLng(10.363, 15.044);
+                var mapOptions = {
+                    zoom: 3,
+                    center: coordinates
+                };
+
+                var map = new google.maps.Map(document.getElementById('map-content'), mapOptions);
+
+                for (var i = 0; i < data.length; i++) {
+                    var each_data = data[i];
+                    var marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(each_data.latitude, each_data.longitude),
+                        map: map,
+                        icon: {
+                                url: "/images/van.jpg",
+                                scaledSize: new google.maps.Size(30, 30)
+                            },
+                        title: each_data.name
+                    });
+
+
+                    /*Creating a closure to retain the correct data */
+                    (function(marker, each_data) {
+                        /*Attaching a click event to the current marker*/
+                        google.maps.event.addListener(marker, "click", function(e) {
+                            infoWindow.setContent(each_data.name, each_data.latitude);
+                            infoWindow.open(map, marker);
+                        });
+                    }) (marker, each_data);
+                }
+            }
+        });
+
+        /*******************************************************************************************************
+            Function that creates and displays a new car entry
+         *******************************************************************************************************/
         $(document).on("click", '#car-button', function(event) {
 
-            /*var formData = new FormData($(this)[0]);*/
+            /*var formData = new FormData();
+            formData.append('file', $('input[type=file]')[0].files[0]);*/
             /*var formData = this.files[0];
             $.post(store, data);*/
             var name = $("#name").val();
             var latitude = $("#latitude").val();
             var longitude = $("#longitude").val();
             /*var image = $("#image").val();*/
-            /*var file_data = $("#image").prop("files")[0];   // Getting the properties of file from file field
-            var form_data = new FormData();                  // Creating object of FormData class
-            form_data.append("file", file_data)*/
 
             $.ajax({
                 headers: {
@@ -69,7 +114,8 @@
                 method: 'POST', // Type of response and matches what we said in the route
                 url: 'store',
                 cache: false,
-                /*contentType: false,
+                /*enctype: 'multipart/form-data',
+                contentType: false,
                 processData: false,*/
                 dataType: 'json',
                 data: { name, latitude, longitude, _token },
@@ -147,19 +193,5 @@
         });
 
     });
-
-
-  function initMap() {
-    var uluru = {lat: -25.363, lng: 131.044};
-    var map = new google.maps.Map(document.getElementById('map-content'), {
-      zoom: 3,
-      center: uluru
-    });
-    var marker = new google.maps.Marker({
-      position: uluru,
-      map: map
-    });
-}
-
 </script>
 @endsection

@@ -13,3 +13,4 @@
 
 Route::get('/', 'HomeController@index');
 Route::post('/store', 'HomeController@storeDisplayCar');
+Route::get('/json_data', 'HomeController@retJsonData');
