@@ -176,14 +176,14 @@
                                 });
                             }) (marker, each_data);
                         }
+
+                        /*Displays message on successful submition of form*/
+                        $('#msg').html(each_data.name + ' Successfully Added<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>').show();
+
+                        /*Remove the error class and the error text on resubmition of the form*/
+                        $('.form-group').removeClass('has-error'); 
+                        $('.help-block').remove(); 
                     }
-
-                    /*Displays message on successful submition of form*/
-                    $('#msg').html(each_data.name + ' Successfully Added<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>').show();
-
-                    /*Remove the error class and the error text on resubmition of the form*/
-                    $('.form-group').removeClass('has-error'); 
-                    $('.help-block').remove(); 
                 },
 
                 error: function(jqXHR, textStatus, errorThrown) {
